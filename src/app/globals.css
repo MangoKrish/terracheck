@@ -23,3 +23,17 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
+
+/* CloudinaryLoader animations */
+@keyframes scan {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(calc(100vh - 2px)); }
+}
+.animate-scan {
+  animation: scan 3s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

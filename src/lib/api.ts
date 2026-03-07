@@ -80,6 +80,59 @@ export async function getLayerGeoJSON(layerName: string): Promise<GeoJSON.Featur
   return res.json();
 }
 
+// --- Smart Recommend Types ---
+
+export interface RecommendRequest {
+  org_type: string;
+  project_type: string;
+  scale: string;
+  budget: string;
+  priority: string;
+  region: string;
+  additional_requirements?: string;
+}
+
+export interface RecommendedLocation {
+  rank: number;
+  location_name: string;
+  lat: number;
+  lng: number;
+  score: number;
+  rationale: string;
+  applicable_laws: { law: string; relevance: string; impact: string }[];
+  incentives: { name: string; description: string; estimated_value: string }[];
+  regulatory_process: { step: string; timeline: string; agency: string }[];
+  estimated_timeline: string;
+  risks: string[];
+  zoning_details: {
+    current_zoning: string;
+    rezoning_required: boolean;
+    rezoning_difficulty: string;
+  };
+}
+
+export interface RecommendResponse {
+  project_requirements: RecommendRequest;
+  candidates_analyzed: number;
+  recommendations: {
+    recommendations: RecommendedLocation[];
+    overall_summary: string;
+    key_considerations: string[];
+  };
+}
+
+export async function recommendLocations(
+  request: RecommendRequest
+): Promise<RecommendResponse> {
+  const res = await fetch(`${API_BASE}/api/recommend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  });
+  if (!res.ok) throw new Error(`Recommendation failed: ${res.statusText}`);
+  return res.json();
+}
+
 export async function askFollowup(
   assessment: Assessment,
   question: string

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from backend.geo_engine import GeoEngine, LAYERS
-from backend.gemini_service import analyze_location, followup_question
+from backend.gemini_service import analyze_location, followup_question, recommend_locations
 
 app = FastAPI(title="TerraCheck API", version="0.1.0")
 
@@ -39,6 +39,16 @@ class FollowupRequest(BaseModel):
     question: str
 
 
+class RecommendRequest(BaseModel):
+    org_type: str = "private"
+    project_type: str = "affordable_housing"
+    scale: str = "medium"
+    budget: str = "5_to_20m"
+    priority: str = "cost"
+    region: str = "waterloo"
+    additional_requirements: str = ""
+
+
 # --- Endpoints ---
 
 @app.get("/api/health")
@@ -66,6 +76,25 @@ async def followup(req: FollowupRequest):
     """Ask a follow-up question about an existing assessment."""
     response = await followup_question(req.assessment, req.question)
     return {"answer": response}
+
+
+@app.post("/api/recommend")
+async def recommend(req: RecommendRequest):
+    """Smart Recommend: find optimal locations for a development project."""
+    candidates = geo_engine.find_viable_zones(
+        project_type=req.project_type,
+        scale=req.scale,
+        region=req.region,
+    )
+    recommendations = await recommend_locations(
+        project_requirements=req.model_dump(),
+        candidate_zones=candidates,
+    )
+    return {
+        "project_requirements": req.model_dump(),
+        "candidates_analyzed": len(candidates),
+        "recommendations": recommendations,
+    }
 
 
 @app.get("/api/layers")

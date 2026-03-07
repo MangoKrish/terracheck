@@ -49,10 +49,10 @@ export default function Home() {
               Start an Assessment
             </Link>
             <Link
-              href="/dashboard"
+              href="/recommend"
               className="px-6 py-3 bg-surface text-foreground border border-border rounded-lg text-sm font-medium hover:bg-surface-hover transition-colors"
             >
-              View Dashboard
+              Find Optimal Locations
             </Link>
           </div>
 

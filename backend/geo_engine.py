@@ -114,6 +114,105 @@ class GeoEngine:
             "results": results,
         }
 
+    # --- Zone compatibility mapping ---
+    ZONE_COMPAT = {
+        "affordable_housing": lambda z: z.get("max_density") in ("high", "medium") and "resident" in z.get("permitted_uses", "").lower(),
+        "residential_condo": lambda z: z.get("max_density") == "high",
+        "commercial": lambda z: any(k in z.get("permitted_uses", "").lower() for k in ("retail", "office", "commercial")),
+        "mixed_use": lambda z: any(k in z.get("permitted_uses", "").lower() for k in ("mixed", "retail")) and "resident" in z.get("permitted_uses", "").lower(),
+        "industrial": lambda z: any(k in z.get("permitted_uses", "").lower() for k in ("manufacturing", "warehouse", "industrial")),
+        "community_center": lambda z: any(k in z.get("permitted_uses", "").lower() for k in ("recreation", "community", "resident")),
+    }
+
+    def find_viable_zones(
+        self,
+        project_type: str,
+        scale: str = "medium",
+        region: str = "waterloo",
+    ) -> list[dict[str, Any]]:
+        """Find zones viable for a given project type.
+
+        1. Filters zoning polygons by project compatibility
+        2. Checks for blocking overlaps (greenbelt, flood, contamination)
+        3. Returns candidates sorted by fewest blocking issues
+        """
+        zoning_gdf = self.layers.get("zoning")
+        if zoning_gdf is None or len(zoning_gdf) == 0:
+            return []
+
+        compat_fn = self.ZONE_COMPAT.get(project_type, lambda z: True)
+        blocking_layers = ["greenbelt", "flood_zones", "contaminated_sites"]
+        warning_layers = ["protected_areas", "indigenous_treaties"]
+
+        min_area = {"small": 0.0, "medium": 0.00005, "large": 0.0001}.get(scale, 0.0)
+
+        candidates = []
+        for _, row in zoning_gdf.iterrows():
+            props = {k: v for k, v in row.items() if k != "geometry"}
+            if not compat_fn(props):
+                continue
+
+            geom = row.geometry
+            if geom is None or geom.is_empty:
+                continue
+            if geom.area < min_area:
+                continue
+
+            centroid = geom.centroid
+            blocking_issues: list[dict] = []
+            nearby_features: dict[str, dict] = {}
+
+            for layer_name in blocking_layers:
+                gdf = self.layers.get(layer_name)
+                if gdf is None:
+                    continue
+                overlap = gdf[gdf.geometry.intersects(geom)]
+                if len(overlap) > 0:
+                    feats = []
+                    for _, r in overlap.iterrows():
+                        fp = {k: str(v) if hasattr(v, "item") else v for k, v in r.items() if k != "geometry"}
+                        feats.append(fp)
+                    blocking_issues.append({
+                        "layer": layer_name,
+                        "label": LAYERS[layer_name]["label"],
+                        "severity": LAYERS[layer_name]["severity"],
+                        "count": len(feats),
+                        "features": feats,
+                    })
+
+            for layer_name in warning_layers:
+                gdf = self.layers.get(layer_name)
+                if gdf is None:
+                    continue
+                overlap = gdf[gdf.geometry.intersects(geom)]
+                if len(overlap) > 0:
+                    feats = []
+                    for _, r in overlap.iterrows():
+                        fp = {k: str(v) if hasattr(v, "item") else v for k, v in r.items() if k != "geometry"}
+                        feats.append(fp)
+                    nearby_features[layer_name] = {
+                        "label": LAYERS[layer_name]["label"],
+                        "severity": LAYERS[layer_name]["severity"],
+                        "count": len(feats),
+                        "features": feats,
+                    }
+
+            candidates.append({
+                "lat": centroid.y,
+                "lng": centroid.x,
+                "zone_code": props.get("zone_code", ""),
+                "zone_name": props.get("zone_name", ""),
+                "municipality": props.get("municipality", ""),
+                "max_height_m": props.get("max_height_m", 0),
+                "max_density": props.get("max_density", ""),
+                "permitted_uses": props.get("permitted_uses", ""),
+                "blocking_issues": blocking_issues,
+                "nearby_features": nearby_features,
+            })
+
+        candidates.sort(key=lambda c: len(c["blocking_issues"]))
+        return candidates
+
     def get_layer_geojson(self, layer_name: str) -> dict | None:
         """Return raw GeoJSON for a specific layer (for map rendering)."""
         if layer_name not in self.layers:

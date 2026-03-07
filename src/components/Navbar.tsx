@@ -66,6 +66,16 @@ export default function Navbar() {
             >
               New Assessment
             </Link>
+            <Link
+              href="/recommend"
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                pathname === "/recommend"
+                  ? "text-primary bg-primary/8"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              Smart Recommend
+            </Link>
           </div>
         )}
       </div>
