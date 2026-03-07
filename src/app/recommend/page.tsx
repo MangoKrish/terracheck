@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import RecommendForm from "@/components/RecommendForm";
 import RecommendCard from "@/components/RecommendCard";
 import CloudinaryLoader from "@/components/CloudinaryLoader";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   recommendLocations,
   type RecommendRequest,
@@ -64,6 +64,101 @@ export default function RecommendPage() {
   };
 
   const recs = result?.recommendations.recommendations || [];
+
+  /* ── Side panel loader sub-component ── */
+  function SidePanelLoader() {
+    const LOAD_STEPS = [
+      { label: "Scanning zoning databases", time: 4000 },
+      { label: "Cross-referencing environmental data", time: 5000 },
+      { label: "Evaluating regulatory frameworks", time: 5000 },
+      { label: "Analyzing market competition", time: 6000 },
+      { label: "Checking development incentives", time: 4000 },
+      { label: "Assessing construction timelines", time: 5000 },
+      { label: "Running AI site selection model", time: 8000 },
+      { label: "Compiling final recommendations", time: 5000 },
+    ];
+    const totalTime = LOAD_STEPS.reduce((s, t) => s + t.time, 0);
+    const startRef = useRef(Date.now());
+    const [elapsed, setElapsed] = useState(0);
+
+    useEffect(() => {
+      const tick = () => {
+        setElapsed(Date.now() - startRef.current);
+        requestAnimationFrame(tick);
+      };
+      const id = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(id);
+    }, []);
+
+    let acc = 0;
+    let step = LOAD_STEPS.length - 1;
+    for (let i = 0; i < LOAD_STEPS.length; i++) {
+      if (elapsed < acc + LOAD_STEPS[i].time) { step = i; break; }
+      acc += LOAD_STEPS[i].time;
+    }
+    const pct = Math.min(Math.round((elapsed / totalTime) * 100), 96);
+
+    return (
+      <div className="py-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center relative">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-pulse">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-foreground">AI Analysis in Progress</h2>
+            <p className="text-xs text-muted">{pct}% complete</p>
+          </div>
+        </div>
+
+        {/* Circular progress */}
+        <div className="w-20 h-20 mx-auto mb-5 relative">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#e8ede9" strokeWidth="5" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#2D6A4F" strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 40}`}
+              strokeDashoffset={`${2 * Math.PI * 40 * (1 - pct / 100)}`}
+              style={{ transition: "stroke-dashoffset 0.5s ease" }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-lg font-bold text-foreground tabular-nums">{pct}%</span>
+          </div>
+        </div>
+
+        {/* Step list */}
+        <div className="space-y-2">
+          {LOAD_STEPS.map((s, i) => (
+            <div key={i} className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-500 ${
+              i < step ? "bg-primary/5" : i === step ? "bg-primary/8 border border-primary/15" : "opacity-40"
+            }`}>
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${
+                i < step ? "bg-primary text-white" : i === step ? "border-2 border-primary" : "border border-border"
+              }`}>
+                {i < step ? (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                ) : i === step ? (
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                ) : null}
+              </div>
+              <span className={`text-xs ${i <= step ? "text-foreground font-medium" : "text-muted"}`}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-5 w-full h-1.5 bg-border-light rounded-full overflow-hidden">
+          <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-light transition-all duration-500" style={{ width: `${pct}%` }} />
+        </div>
+
+        <p className="text-center text-[11px] text-muted mt-3">
+          AI is powering your plans — hang tight!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -130,18 +225,8 @@ export default function RecommendPage() {
               <RecommendForm onSubmit={handleSubmit} error={error} />
             )}
 
-            {/* Loading state */}
-            {state === "loading" && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-sm font-medium text-foreground mb-1">
-                  AI is analyzing your requirements...
-                </p>
-                <p className="text-xs text-muted">
-                  Scanning zones, environment, competition, and timelines across Ontario
-                </p>
-              </div>
-            )}
+            {/* Loading state — step-by-step progress */}
+            {state === "loading" && <SidePanelLoader />}
 
             {/* Results state */}
             {state === "results" && result && (
