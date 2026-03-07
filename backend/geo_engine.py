@@ -49,6 +49,7 @@ LAYERS = {
 
 # Bounding boxes for Ontario region filtering
 REGION_BOUNDS = {
+    # Major urban centres
     "waterloo": {"lat_min": 43.35, "lat_max": 43.58, "lng_min": -80.65, "lng_max": -80.30},
     "gta": {"lat_min": 43.50, "lat_max": 43.90, "lng_min": -79.80, "lng_max": -79.10},
     "ottawa": {"lat_min": 45.25, "lat_max": 45.55, "lng_min": -75.95, "lng_max": -75.50},
@@ -59,6 +60,12 @@ REGION_BOUNDS = {
     "niagara": {"lat_min": 42.90, "lat_max": 43.25, "lng_min": -79.30, "lng_max": -78.90},
     "sudbury": {"lat_min": 46.40, "lat_max": 46.60, "lng_min": -81.15, "lng_max": -80.80},
     "thunder_bay": {"lat_min": 48.30, "lat_max": 48.50, "lng_min": -89.40, "lng_max": -89.10},
+    # Rural / small-town / undeveloped regions
+    "northern_ontario": {"lat_min": 46.00, "lat_max": 50.00, "lng_min": -95.00, "lng_max": -79.00},
+    "eastern_ontario": {"lat_min": 44.00, "lat_max": 46.00, "lng_min": -77.50, "lng_max": -74.50},
+    "central_ontario": {"lat_min": 44.20, "lat_max": 46.00, "lng_min": -80.50, "lng_max": -78.50},
+    "southwestern_ontario": {"lat_min": 42.50, "lat_max": 43.50, "lng_min": -82.50, "lng_max": -80.00},
+    # Full province
     "ontario_wide": None,  # No filtering — search all zones
 }
 

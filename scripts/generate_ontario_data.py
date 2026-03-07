@@ -168,14 +168,96 @@ def generate_zoning():
         {"zone_code": "I2", "zone_name": "General Industrial", "municipality": "City of Thunder Bay",
          "max_height_m": 15, "max_density": "medium", "permitted_uses": "manufacturing, warehouse, grain elevator, port facility",
          "lat": 48.410, "lng": -89.220},
+
+        # ── RURAL / UNDEVELOPED / SMALL TOWN ZONES ───────────────────
+        # These represent the vast available land across Ontario where new
+        # communities and affordable housing developments could be built,
+        # helping distribute population away from overloaded urban cores.
+
+        # Orillia — small city between Barrie and Muskoka, GO Transit connection
+        {"zone_code": "RU-1", "zone_name": "Rural Residential Development", "municipality": "City of Orillia",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, community facilities, mixed residential",
+         "lat": 44.61, "lng": -79.42, "dlat": 0.015, "dlng": 0.020},
+
+        # Cobourg — lakefront town on Highway 401, VIA Rail stop
+        {"zone_code": "R3-D", "zone_name": "Medium Density Residential - Development", "municipality": "Town of Cobourg",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "apartments, townhouses, residential subdivision, mixed residential",
+         "lat": 43.96, "lng": -78.17, "dlat": 0.012, "dlng": 0.018},
+
+        # Belleville — Highway 401 corridor, growing city
+        {"zone_code": "RD", "zone_name": "Residential Development Zone", "municipality": "City of Belleville",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, community centre",
+         "lat": 44.17, "lng": -77.38, "dlat": 0.012, "dlng": 0.018},
+
+        # North Bay — gateway to Northern Ontario, college town
+        {"zone_code": "R2-NB", "zone_name": "Residential Growth Zone", "municipality": "City of North Bay",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, mixed residential",
+         "lat": 46.31, "lng": -79.46, "dlat": 0.015, "dlng": 0.020},
+
+        # Timmins — Northern Ontario, vast available land, mining economy
+        {"zone_code": "R1-T", "zone_name": "Residential Expansion Zone", "municipality": "City of Timmins",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, community facilities, mixed residential",
+         "lat": 48.48, "lng": -81.33, "dlat": 0.020, "dlng": 0.025},
+
+        # Sault Ste. Marie — border city, affordable land, university
+        {"zone_code": "RG", "zone_name": "Residential Growth Area", "municipality": "City of Sault Ste. Marie",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, mixed residential, community centre",
+         "lat": 46.52, "lng": -84.33, "dlat": 0.015, "dlng": 0.020},
+
+        # Huntsville / Muskoka — recreational area with year-round growth
+        {"zone_code": "RC", "zone_name": "Rural Community Residential", "municipality": "Town of Huntsville",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential, townhouses, community facilities, mixed residential",
+         "lat": 45.33, "lng": -79.22, "dlat": 0.012, "dlng": 0.018},
+
+        # Pembroke — Ottawa Valley, affordable, highway access
+        {"zone_code": "R2-P", "zone_name": "Residential Development", "municipality": "City of Pembroke",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, mixed residential",
+         "lat": 45.83, "lng": -77.11, "dlat": 0.012, "dlng": 0.018},
+
+        # Cornwall — Eastern Ontario, affordable, highway 401
+        {"zone_code": "RD-C", "zone_name": "Residential Development Zone", "municipality": "City of Cornwall",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, mixed residential, commercial",
+         "lat": 45.02, "lng": -74.73, "dlat": 0.012, "dlng": 0.018},
+
+        # Brockville — Highway 401, VIA Rail, St. Lawrence waterfront
+        {"zone_code": "R3-B", "zone_name": "Residential Growth Zone", "municipality": "City of Brockville",
+         "max_height_m": 15, "max_density": "medium", "permitted_uses": "residential subdivision, apartments, townhouses, mixed residential",
+         "lat": 44.59, "lng": -75.68, "dlat": 0.012, "dlng": 0.018},
+
+        # Kenora — Northwestern Ontario, vast land, lakefront
+        {"zone_code": "R1-K", "zone_name": "Rural Residential Expansion", "municipality": "City of Kenora",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, community facilities, mixed residential",
+         "lat": 49.77, "lng": -94.49, "dlat": 0.015, "dlng": 0.020},
+
+        # Cochrane — Northern Ontario, highway junction, very affordable land
+        {"zone_code": "RU-CO", "zone_name": "Rural Development Zone", "municipality": "Town of Cochrane",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, community facilities, mixed residential",
+         "lat": 49.07, "lng": -81.02, "dlat": 0.020, "dlng": 0.025},
+
+        # Parry Sound — Central Ontario, highway 400 extension
+        {"zone_code": "RG-PS", "zone_name": "Residential Growth Zone", "municipality": "Town of Parry Sound",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential, townhouses, community facilities, mixed residential",
+         "lat": 45.34, "lng": -80.04, "dlat": 0.012, "dlng": 0.018},
+
+        # Elliot Lake — Northern Ontario, former mining town with infrastructure, very cheap land
+        {"zone_code": "RU-EL", "zone_name": "Rural Residential Revitalization", "municipality": "City of Elliot Lake",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, retirement community, mixed residential",
+         "lat": 46.38, "lng": -82.65, "dlat": 0.015, "dlng": 0.020},
+
+        # Kapuskasing — Northern Ontario, existing infrastructure from pulp mill era
+        {"zone_code": "RU-KA", "zone_name": "Rural Community Development", "municipality": "Town of Kapuskasing",
+         "max_height_m": 12, "max_density": "medium", "permitted_uses": "residential subdivision, townhouses, community facilities, mixed residential",
+         "lat": 49.42, "lng": -82.43, "dlat": 0.020, "dlng": 0.025},
     ]
 
     for z in zone_defs:
         lat, lng = z.pop("lat"), z.pop("lng")
+        dlat = z.pop("dlat", 0.008)
+        dlng = z.pop("dlng", 0.01)
         features.append({
             "type": "Feature",
             "properties": z,
-            "geometry": _rect(lat, lng),
+            "geometry": _rect(lat, lng, dlat, dlng),
         })
 
     return {"type": "FeatureCollection", "features": features}

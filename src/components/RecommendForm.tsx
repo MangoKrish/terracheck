@@ -63,6 +63,11 @@ const FIELDS = [
     key: "region",
     label: "Region",
     options: [
+      { value: "ontario_wide", label: "All of Ontario (Recommended)" },
+      { value: "northern_ontario", label: "Northern Ontario" },
+      { value: "eastern_ontario", label: "Eastern Ontario" },
+      { value: "central_ontario", label: "Central Ontario" },
+      { value: "southwestern_ontario", label: "Southwestern Ontario" },
       { value: "gta", label: "Greater Toronto Area" },
       { value: "ottawa", label: "Ottawa-Gatineau" },
       { value: "waterloo", label: "Waterloo Region" },
@@ -73,7 +78,6 @@ const FIELDS = [
       { value: "niagara", label: "Niagara Region" },
       { value: "sudbury", label: "Greater Sudbury" },
       { value: "thunder_bay", label: "Thunder Bay" },
-      { value: "ontario_wide", label: "All of Ontario" },
     ],
   },
 ] as const;
@@ -84,7 +88,7 @@ const DEFAULTS: RecommendRequest = {
   scale: "medium",
   budget: "5_to_20m",
   priority: "cost",
-  region: "gta",
+  region: "ontario_wide",
   additional_requirements: "",
 };
 

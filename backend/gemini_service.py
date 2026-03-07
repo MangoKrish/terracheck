@@ -142,18 +142,51 @@ Based on this data, provide your structured viability assessment as JSON."""
         return _fallback_response(str(e))
 
 
-RECOMMEND_SYSTEM_PROMPT = """You are a Canadian land development site selection expert specializing in the Province of Ontario. Given project requirements and candidate zones with geospatial data, provide a comprehensive analysis covering feasibility, environment, competition, timelines, and special conditions.
+RECOMMEND_SYSTEM_PROMPT = """You are a Canadian land development site selection expert specializing in the Province of Ontario. You take a STRATEGIC approach to Ontario's housing crisis — you don't just recommend building in already-overcrowded cities.
+
+CRITICAL STRATEGIC PRINCIPLE — THINK BEYOND URBAN CORES:
+Ontario has a massive housing crisis concentrated in the GTA, Ottawa, and a few cities. But Ontario is also a VAST province with enormous amounts of underutilized land, small towns with existing infrastructure (roads, water, power, schools) that are losing population, and rural areas where land costs are a fraction of urban prices.
+
+Your recommendations MUST include a MIX of:
+1. URBAN INFILL — Yes, some locations in established cities where it makes sense
+2. SMALL TOWN / RURAL DEVELOPMENT — Actively recommend building in smaller communities (Orillia, Cobourg, Belleville, North Bay, Timmins, Sault Ste. Marie, Pembroke, Cornwall, Brockville, Elliot Lake, Kenora, etc.) where:
+   - Land is 5-20x cheaper than GTA
+   - Existing infrastructure (roads, water, hydro, schools, hospitals) is underutilized
+   - These communities WANT growth and will fast-track approvals
+   - Workers can afford homes without spending 60%+ of income on housing
+   - Building there helps tackle the housing crisis by distributing population
+   - Remote work means people no longer need to live in Toronto to have good jobs
+
+3. NEW COMMUNITY DEVELOPMENT — For larger scale projects, consider greenfield sites near highway corridors (401, 11, 17, 400) where entirely new neighborhoods could be built
+
+DO NOT default to recommending only Toronto/GTA/Ottawa. The whole point of tackling the housing crisis is to build where land is available and affordable, not keep cramming into already-saturated urban cores.
+
+When ranking, give BONUS points to locations that:
+- Have significantly cheaper land (cost efficiency)
+- Are in communities that actively seek development
+- Have existing but underutilized infrastructure
+- Reduce burden on overcrowded urban areas
+- Offer genuinely affordable housing outcomes (not "$500K affordable" in Toronto)
+- Are near transportation corridors (highways, rail, planned transit)
+
+ENVIRONMENTAL GUARDRAILS for rural recommendations:
+- NEVER recommend building on pristine wilderness, old-growth forests, or untouched wetlands
+- Prefer brownfield, previously-disturbed, or already-serviced land in small towns
+- Many Northern Ontario towns (Elliot Lake, Kapuskasing, etc.) have EXISTING infrastructure from declining industries — recommend REUSING that infrastructure rather than building on greenfield
+- Always flag if rural development could impact wildlife corridors, drinking water sources, or sensitive ecosystems
+- Score rural sites LOW if development would cause significant environmental harm, even if land is cheap
 
 KEY REGULATIONS & PROGRAMS:
-- Ontario Housing Supply Action Plan (Bill 23)
+- Ontario Housing Supply Action Plan (Bill 23) — applies province-wide
 - CMHC Rapid Housing Initiative / Housing Accelerator Fund
+- Northern Ontario Heritage Fund Corporation (NOHFC) — grants for Northern development
+- Ontario Community Infrastructure Fund — for smaller municipalities
 - Development Charges Act exemptions for affordable housing
 - Community Improvement Plans (CIPs)
 - Ontario Building Code, Planning Act (S.34 zoning, S.51 subdivision)
 - Environmental Assessment Act, Greenbelt Act 2005
-- Provincial Policy Statement on land use
+- Provincial Policy Statement on land use — supports rural settlement areas
 - Endangered Species Act 2007, Species at Risk Act (federal)
-- Ontario Heritage Act, Clean Water Act
 - Municipal Official Plans and Secondary Plans
 
 ANALYSIS REQUIREMENTS — For each recommended location, you MUST assess:
@@ -164,36 +197,44 @@ ANALYSIS REQUIREMENTS — For each recommended location, you MUST assess:
    - Contamination or remediation needs (Record of Site Condition)
    - Stormwater management and Low Impact Development (LID) requirements
    - Proximity to Significant Natural Heritage Features
+   - For rural/greenfield: assess if the land is farmland (Class 1-3 agricultural land is protected)
+   - CRITICAL for rural areas: Carefully assess if development would harm untouched ecosystems, wildlife corridors, wetlands, or forests. Rural development MUST be on already-disturbed or brownfield land, near existing infrastructure, NOT on pristine wilderness. Score rural sites LOW if they would destroy natural habitats.
+   - Check for proximity to provincial parks, conservation reserves, and Areas of Natural and Scientific Interest (ANSI)
+   - Assess impact on local watersheds and drinking water sources
+   - Northern Ontario: check for caribou habitat, boreal forest sensitivity, and mining legacy contamination
 
 2. PREVIOUS DEVELOPMENT ATTEMPTS:
-   - Known historical proposals or abandoned development applications for the area
-   - Community opposition history if applicable
+   - Known historical proposals or development applications for the area
+   - Community support or opposition history
    - OMB/LPAT/OLT hearing decisions for the area
+   - For small towns: note if municipality is actively seeking growth
 
 3. COMPETITION ANALYSIS:
    - Existing similar developments within 5km radius
    - Market saturation assessment for the proposed project type
    - Planned or approved competing projects in the pipeline
    - Demand-supply dynamics for the region
+   - For rural areas: note the LACK of competition as a positive
 
 4. REALISTIC CONSTRUCTION TIMELINE:
    - Break down into pre-construction and construction phases
    - Account for Ontario seasonal constraints (ground frost Dec-Mar)
    - Factor in current supply chain lead times
-   - Include municipal processing backlogs
+   - Note that small municipalities often have FASTER approval processes than large cities
    - Include environmental assessment time if applicable
 
 5. SPECIAL POLICIES, CONDITIONS & RESTRICTIONS:
    - Municipal Official Plan designations and policies
    - Heritage Conservation District designations (Ontario Heritage Act)
    - Height restrictions and angular plane requirements
-   - Shadow study requirements (especially downtown cores)
-   - Section 37 / Community Benefits Charge agreements
-   - Inclusionary Zoning bylaws (where applicable)
+   - For rural: note simplified zoning and fewer restrictions
+   - NOHFC eligibility for Northern Ontario locations
+   - Provincial land availability (Crown land, surplus government properties)
    - Parkland dedication requirements
-   - Urban design guidelines and holding provisions
+   - Infrastructure capacity (water, sewer, roads)
 
 Score: 80-100 highly viable, 60-79 viable with conditions, 40-59 challenging, 0-39 not recommended.
+IMPORTANT: Rural/small-town locations with cheap land, willing municipalities, and existing infrastructure should score HIGH (70-90) even without big-city transit access.
 
 You MUST respond with valid JSON only. No markdown, no extra text:
 {
@@ -355,31 +396,68 @@ _FALLBACK_DB = {
             {"current_zoning": "IL Light Industrial", "rezoning_required": True, "rezoning_difficulty": "moderate"},
             env_sensitivity="low", competition_nearby=[{"name": "Kanata Town Centre redevelopment", "distance_km": 1.2, "status": "proposed"}], demand="Growing demand from tech workers seeking walkable communities"),
     ],
+    # Ontario-wide: diverse mix of rural + urban to tackle housing crisis
+    "ontario_wide": lambda ptype: [
+        _make_fallback_loc(1, "Elliot Lake — Rural Revitalization", 46.38, -82.65, 92,
+            f"Former mining city with vast existing infrastructure (roads, water, hydro, hospital, schools) that is severely underutilized. Land costs are 10-20x cheaper than GTA. City actively seeks new residents and will fast-track approvals for {ptype}.",
+            [{"law": "Planning Act", "relevance": "Simplified rural zoning — residential permitted", "impact": "positive"}, {"law": "NOHFC", "relevance": "Northern Ontario Heritage Fund grants available", "impact": "positive"}],
+            [{"name": "NOHFC Community Building Fund", "description": "Grants for Northern Ontario community development", "estimated_value": "$1M-$5M"}, {"name": "CMHC Rapid Housing Initiative", "description": "Federal funding for affordable housing", "estimated_value": "$5M-$15M"}],
+            [{"step": "Municipal consultation", "timeline": "2-4 weeks", "agency": "City of Elliot Lake"}, {"step": "Site Plan Approval", "timeline": "2-3 months", "agency": "City of Elliot Lake"}, {"step": "Building Permit", "timeline": "3-4 weeks", "agency": "Building Division"}],
+            "4-8 months", ["Remote location — 3hr from Sudbury", "Limited local construction workforce"],
+            {"current_zoning": "RU-EL Rural Residential Revitalization", "rezoning_required": False, "rezoning_difficulty": "easy"},
+            env_sensitivity="low", env_concerns=["Former mining area — check for legacy contamination", "Maintain buffer from Lake Huron watershed"],
+            env_studies=["Phase 1 ESA"], env_mitigation=["Use existing disturbed land, avoid adjacent forests"],
+            market_sat="low", demand="Very low competition; city actively recruiting new residents",
+            special_conds=[{"type": "official_plan", "description": "Municipality has growth incentive program — waived fees for new housing", "impact": "positive"}],
+            pre_con=3, con=12, total=15),
+        _make_fallback_loc(2, "North Bay — Highway 11 Corridor", 46.31, -79.46, 88,
+            f"Gateway city to Northern Ontario with college, hospital, and highway junction (11/17). Growing demand for {ptype}. Land 5-10x cheaper than GTA with full municipal services.",
+            [{"law": "Planning Act", "relevance": "Residential growth zone supports medium-density", "impact": "positive"}, {"law": "NOHFC", "relevance": "Northern Ontario grants available", "impact": "positive"}],
+            [{"name": "NOHFC Investment Program", "description": "Northern development incentives", "estimated_value": "$2M-$8M"}, {"name": "Ontario Community Infrastructure Fund", "description": "Infrastructure grants for smaller municipalities", "estimated_value": "Up to $3M"}],
+            [{"step": "Pre-consultation", "timeline": "2-3 weeks", "agency": "City of North Bay"}, {"step": "Site Plan", "timeline": "3-4 months", "agency": "City of North Bay"}],
+            "6-10 months", ["Seasonal construction limitations (Dec-Mar frost)", "Distance from GTA labour pool"],
+            {"current_zoning": "R2-NB Residential Growth Zone", "rezoning_required": False, "rezoning_difficulty": "easy"},
+            env_sensitivity="low", env_concerns=["Maintain setback from Lake Nipissing"], env_studies=["Phase 1 ESA"],
+            competition_nearby=[{"name": "Lakeshore Drive development", "distance_km": 3.0, "status": "proposed"}],
+            market_sat="low", demand="Growing demand from remote workers and college students",
+            pre_con=3, con=14, total=17),
+        _make_fallback_loc(3, "Cobourg — Highway 401 Small Town", 43.96, -78.17, 85,
+            f"Charming lakefront town on Highway 401 with VIA Rail stop — commutable to GTA. Much cheaper land with full services. Ideal for {ptype} targeting people priced out of Toronto.",
+            [{"law": "Planning Act", "relevance": "Medium density residential permitted", "impact": "positive"}, {"law": "Bill 23", "relevance": "Streamlined approvals for residential", "impact": "positive"}],
+            [{"name": "CMHC Housing Accelerator Fund", "description": "Federal housing funding", "estimated_value": "$3M-$10M"}, {"name": "Northumberland County CIP", "description": "Community improvement grants", "estimated_value": "Up to $500K"}],
+            [{"step": "Pre-consultation", "timeline": "2-3 weeks", "agency": "Town of Cobourg"}, {"step": "Site Plan", "timeline": "3-5 months", "agency": "Town of Cobourg"}],
+            "8-12 months", ["Heritage district constraints in downtown core", "Limited high-rise appetite in small town"],
+            {"current_zoning": "R3-D Medium Density Residential", "rezoning_required": False, "rezoning_difficulty": "easy"},
+            env_sensitivity="low", env_concerns=["Maintain setback from Lake Ontario shoreline"],
+            competition_nearby=[{"name": "Cobourg Waterfront Condos", "distance_km": 1.5, "status": "built"}],
+            market_sat="low", demand="Rising demand from GTA remote workers seeking affordable lakefront living",
+            pre_con=4, con=14, total=18),
+    ],
 }
 
 
 def _fallback_recommendations(project_requirements: dict) -> dict:
     """Return sample recommendations when Gemini API is unavailable. Region-aware."""
     ptype = project_requirements.get("project_type", "affordable_housing").replace("_", " ")
-    region = project_requirements.get("region", "waterloo")
+    region = project_requirements.get("region", "ontario_wide")
 
-    # Pick the right region, fallback to waterloo
+    # Pick the right region, fallback to ontario_wide (diverse mix)
     builder = _FALLBACK_DB.get(region)
     if builder is None:
-        # For regions without specific fallback data, use waterloo
-        builder = _FALLBACK_DB["waterloo"]
+        builder = _FALLBACK_DB["ontario_wide"]
 
     recs = builder(ptype)
     region_label = region.replace("_", " ").title()
 
     return {
         "recommendations": recs,
-        "overall_summary": f"Found {len(recs)} candidate zones in {region_label} for {ptype}. Connect Gemini API for live AI-powered analysis with full environmental, competition, and timeline data.",
+        "overall_summary": f"Found {len(recs)} candidate zones across {region_label} for {ptype}. These recommendations prioritize underutilized land and existing infrastructure to maximize affordability and reduce urban burden. Connect Gemini API for live AI-powered analysis.",
         "key_considerations": [
-            "Bill 23 reduces barriers for residential development across Ontario",
-            "Federal CMHC programs provide significant funding for affordable housing",
-            "Environmental assessments are mandatory near sensitive natural heritage features",
-            "Ontario seasonal construction constraints (Dec-Mar frost) should factor into timelines",
+            "Ontario's housing crisis can be tackled by building in smaller communities with cheap land and existing infrastructure",
+            "Northern Ontario Heritage Fund (NOHFC) provides grants specifically for development in Northern communities",
+            "Bill 23 reduces barriers for residential development province-wide, not just in cities",
+            "Many small Ontario towns have underutilized roads, water, hydro, schools, and hospitals — build there",
+            "Environmental assessments remain mandatory — rural development must avoid harming ecosystems",
         ],
     }
 
