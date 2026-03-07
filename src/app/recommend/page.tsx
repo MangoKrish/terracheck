@@ -135,10 +135,10 @@ export default function RecommendPage() {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
                 <p className="text-sm font-medium text-foreground mb-1">
-                  Finding optimal locations...
+                  AI is analyzing your requirements...
                 </p>
                 <p className="text-xs text-muted">
-                  Analyzing zones, regulations, and incentives
+                  Scanning zones, environment, competition, and timelines across Ontario
                 </p>
               </div>
             )}

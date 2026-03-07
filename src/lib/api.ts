@@ -109,6 +109,30 @@ export interface RecommendedLocation {
     rezoning_required: boolean;
     rezoning_difficulty: string;
   };
+  // Enhanced analysis fields
+  environmental_impact?: {
+    ecological_sensitivity: string;
+    key_concerns: string[];
+    required_studies: string[];
+    mitigation_measures: string[];
+  };
+  competition?: {
+    nearby_similar: { name: string; distance_km: number; status: string }[];
+    market_saturation: string;
+    demand_outlook: string;
+  };
+  special_conditions?: {
+    type: string;
+    description: string;
+    impact: string;
+  }[];
+  construction_timeline?: {
+    pre_construction_months: number;
+    construction_months: number;
+    total_months: number;
+    seasonal_considerations: string;
+    key_milestones: { phase: string; duration: string }[];
+  };
 }
 
 export interface RecommendResponse {

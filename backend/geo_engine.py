@@ -47,6 +47,22 @@ LAYERS = {
 }
 
 
+# Bounding boxes for Ontario region filtering
+REGION_BOUNDS = {
+    "waterloo": {"lat_min": 43.35, "lat_max": 43.58, "lng_min": -80.65, "lng_max": -80.30},
+    "gta": {"lat_min": 43.50, "lat_max": 43.90, "lng_min": -79.80, "lng_max": -79.10},
+    "ottawa": {"lat_min": 45.25, "lat_max": 45.55, "lng_min": -75.95, "lng_max": -75.50},
+    "hamilton": {"lat_min": 43.15, "lat_max": 43.35, "lng_min": -80.05, "lng_max": -79.70},
+    "london": {"lat_min": 42.85, "lat_max": 43.10, "lng_min": -81.40, "lng_max": -81.10},
+    "kingston": {"lat_min": 44.15, "lat_max": 44.35, "lng_min": -76.65, "lng_max": -76.35},
+    "barrie": {"lat_min": 44.30, "lat_max": 44.50, "lng_min": -79.85, "lng_max": -79.55},
+    "niagara": {"lat_min": 42.90, "lat_max": 43.25, "lng_min": -79.30, "lng_max": -78.90},
+    "sudbury": {"lat_min": 46.40, "lat_max": 46.60, "lng_min": -81.15, "lng_max": -80.80},
+    "thunder_bay": {"lat_min": 48.30, "lat_max": 48.50, "lng_min": -89.40, "lng_max": -89.10},
+    "ontario_wide": None,  # No filtering — search all zones
+}
+
+
 class GeoEngine:
     """Loads all GeoJSON layers into memory and provides spatial query methods."""
 
@@ -132,13 +148,24 @@ class GeoEngine:
     ) -> list[dict[str, Any]]:
         """Find zones viable for a given project type.
 
-        1. Filters zoning polygons by project compatibility
-        2. Checks for blocking overlaps (greenbelt, flood, contamination)
-        3. Returns candidates sorted by fewest blocking issues
+        1. Filters zoning polygons by region bounding box
+        2. Filters by project compatibility
+        3. Checks for blocking overlaps (greenbelt, flood, contamination)
+        4. Returns candidates sorted by fewest blocking issues
         """
         zoning_gdf = self.layers.get("zoning")
         if zoning_gdf is None or len(zoning_gdf) == 0:
             return []
+
+        # Region-based spatial filtering
+        bounds = REGION_BOUNDS.get(region)
+        if bounds is not None:
+            from shapely.geometry import box
+            region_box = box(bounds["lng_min"], bounds["lat_min"],
+                            bounds["lng_max"], bounds["lat_max"])
+            zoning_gdf = zoning_gdf[zoning_gdf.geometry.intersects(region_box)]
+            if len(zoning_gdf) == 0:
+                return []
 
         compat_fn = self.ZONE_COMPAT.get(project_type, lambda z: True)
         blocking_layers = ["greenbelt", "flood_zones", "contaminated_sites"]

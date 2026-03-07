@@ -63,9 +63,17 @@ const FIELDS = [
     key: "region",
     label: "Region",
     options: [
-      { value: "waterloo", label: "Waterloo Region" },
       { value: "gta", label: "Greater Toronto Area" },
-      { value: "ontario_wide", label: "Ontario-Wide" },
+      { value: "ottawa", label: "Ottawa-Gatineau" },
+      { value: "waterloo", label: "Waterloo Region" },
+      { value: "hamilton", label: "Hamilton" },
+      { value: "london", label: "London" },
+      { value: "kingston", label: "Kingston" },
+      { value: "barrie", label: "Barrie / Simcoe County" },
+      { value: "niagara", label: "Niagara Region" },
+      { value: "sudbury", label: "Greater Sudbury" },
+      { value: "thunder_bay", label: "Thunder Bay" },
+      { value: "ontario_wide", label: "All of Ontario" },
     ],
   },
 ] as const;
@@ -76,7 +84,7 @@ const DEFAULTS: RecommendRequest = {
   scale: "medium",
   budget: "5_to_20m",
   priority: "cost",
-  region: "waterloo",
+  region: "gta",
   additional_requirements: "",
 };
 
@@ -98,8 +106,8 @@ export default function RecommendForm({ onSubmit, error }: RecommendFormProps) {
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-foreground">Find Optimal Locations</h2>
-          <p className="text-xs text-muted">Describe your project and we'll find the best zones</p>
+          <h2 className="text-base font-semibold text-foreground">AI-Powered Site Analysis</h2>
+          <p className="text-xs text-muted">Describe your project and AI will find optimal zones across Ontario</p>
         </div>
       </div>
 
@@ -154,13 +162,12 @@ export default function RecommendForm({ onSubmit, error }: RecommendFormProps) {
         {/* Submit */}
         <button
           type="submit"
-          className="w-full py-3 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark transition-colors shadow-sm flex items-center justify-center gap-2"
+          className="w-full py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all shadow-md flex items-center justify-center gap-2"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
           </svg>
-          Find Locations
+          AI, Analyze My Requirements
         </button>
       </form>
     </div>

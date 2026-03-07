@@ -113,8 +113,8 @@ export default function RecommendMap({
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden border border-border">
       <MapContainer
-        center={[43.47, -80.52]}
-        zoom={11}
+        center={[44.0, -79.5]}
+        zoom={6}
         style={{ width: "100%", height: "100%" }}
         zoomControl={false}
       >
