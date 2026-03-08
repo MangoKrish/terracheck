@@ -6,7 +6,10 @@ import SearchBar from "@/components/SearchBar";
 import ScoreIndicator from "@/components/ScoreIndicator";
 import CategoryCard from "@/components/CategoryCard";
 import { useState, useCallback, useRef } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { assessLocation, askFollowup, type AssessResponse, type Assessment } from "@/lib/api";
+import AssessLoader from "@/components/AssessLoader";
+import { saveAssessment } from "@/lib/history";
 
 // Dynamic import to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -18,9 +21,11 @@ const CATEGORY_MAP: Record<string, string> = {
   contamination: "Contaminated Sites",
   indigenous_lands: "Indigenous Lands",
   greenbelt: "Greenbelt",
+  infrastructure: "Nearby Infrastructure",
 };
 
 export default function AssessPage() {
+  const { user } = useUser();
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AssessResponse | null>(null);
@@ -35,16 +40,27 @@ export default function AssessPage() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setFollowupA(null);
+
+    const startTime = Date.now();
+    const MIN_LOADING_MS = 3800;
 
     try {
       const data = await assessLocation(lat, lng, 1.0);
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
       setResult(data);
+      // Save to history
+      if (user?.sub) {
+        saveAssessment(user.sub, data);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to assess location");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const handleSearchSelect = useCallback((lat: number, lng: number, _name: string) => {
     handlePinDrop(lat, lng);
@@ -117,13 +133,7 @@ export default function AssessPage() {
             )}
 
             {/* Loading state */}
-            {loading && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-sm text-muted">Analyzing location...</p>
-                <p className="text-xs text-muted-light mt-1">Querying environmental databases</p>
-              </div>
-            )}
+            {loading && <AssessLoader />}
 
             {/* Error state */}
             {error && (

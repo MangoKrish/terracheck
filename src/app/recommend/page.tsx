@@ -6,12 +6,14 @@ import RecommendForm from "@/components/RecommendForm";
 import RecommendCard from "@/components/RecommendCard";
 import CloudinaryLoader from "@/components/CloudinaryLoader";
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
   recommendLocations,
   type RecommendRequest,
   type RecommendResponse,
   type RecommendedLocation,
 } from "@/lib/api";
+import { saveRecommendation } from "@/lib/history";
 
 const RecommendMap = dynamic(() => import("@/components/RecommendMap"), {
   ssr: false,
@@ -20,6 +22,7 @@ const RecommendMap = dynamic(() => import("@/components/RecommendMap"), {
 type PageState = "idle" | "loading" | "results";
 
 export default function RecommendPage() {
+  const { user } = useUser();
   const [state, setState] = useState<PageState>("idle");
   const [result, setResult] = useState<RecommendResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +46,10 @@ export default function RecommendPage() {
       await new Promise((r) => setTimeout(r, remaining));
       setResult(data);
       setState("results");
+      // Save to history
+      if (user?.sub) {
+        saveRecommendation(user.sub, formData, data);
+      }
       if (data.recommendations.recommendations.length > 0) {
         setExpandedCard(0);
       }

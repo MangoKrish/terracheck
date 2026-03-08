@@ -9,6 +9,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from backend.geo_engine import GeoEngine, LAYERS
 from backend.gemini_service import analyze_location, followup_question, recommend_locations
+from backend.infrastructure import query_nearby_infrastructure, filter_zones_by_infrastructure
 
 app = FastAPI(title="TerraCheck API", version="0.1.0")
 
@@ -58,11 +59,17 @@ def health():
 
 @app.post("/api/assess")
 async def assess_location(req: AssessRequest):
-    """Main endpoint: query geospatial layers and run Gemini analysis."""
+    """Main endpoint: query geospatial layers, check infrastructure, run Gemini analysis."""
     # Step 1: Spatial query
     geo_data = geo_engine.query_point(req.lat, req.lng, req.radius_km)
 
-    # Step 2: AI analysis
+    # Step 2: Infrastructure check (Overpass API)
+    infra_data = await query_nearby_infrastructure(
+        req.lat, req.lng, radius_m=int(req.radius_km * 1000)
+    )
+    geo_data["infrastructure"] = infra_data
+
+    # Step 3: AI analysis (now includes infrastructure data)
     assessment = await analyze_location(geo_data)
 
     return {
@@ -86,6 +93,8 @@ async def recommend(req: RecommendRequest):
         scale=req.scale,
         region=req.region,
     )
+    # Filter out zones with major infrastructure nearby
+    candidates = await filter_zones_by_infrastructure(candidates)
     recommendations = await recommend_locations(
         project_requirements=req.model_dump(),
         candidate_zones=candidates,

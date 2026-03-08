@@ -31,6 +31,7 @@ export interface Assessment {
     contamination: CategoryStatus;
     indigenous_lands: CategoryStatus;
     greenbelt: CategoryStatus;
+    infrastructure: CategoryStatus;
   };
 }
 

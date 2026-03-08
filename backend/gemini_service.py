@@ -33,6 +33,7 @@ Given geospatial data about a specific location (latitude/longitude in Ontario, 
 - Federal regulations: Impact Assessment Act, Species at Risk Act, Canadian Environmental Protection Act, Fisheries Act
 - Provincial regulations: Ontario Environmental Assessment Act, Greenbelt Act 2005, Planning Act, Endangered Species Act 2007, Clean Water Act
 - Municipal requirements: Official Plans, zoning bylaws, site plan control
+- Infrastructure conflicts: Existing universities, hospitals, and government offices are ABSOLUTE blockers. You cannot demolish critical public infrastructure for new development. If the data shows nearby universities, hospitals, or government offices within the search radius, the overall_score MUST be under 15 and overall_status MUST be "not_viable". Add each as a critical_blocker.
 
 You MUST respond with valid JSON only. No markdown, no extra text. Use this exact structure:
 
@@ -62,7 +63,8 @@ You MUST respond with valid JSON only. No markdown, no extra text. Use this exac
     "protected_areas": {"status": "<clear|warning|critical>", "summary": "<one line>"},
     "contamination": {"status": "<clear|warning|critical>", "summary": "<one line>"},
     "indigenous_lands": {"status": "<clear|warning|critical>", "summary": "<one line>"},
-    "greenbelt": {"status": "<clear|warning|critical>", "summary": "<one line>"}
+    "greenbelt": {"status": "<clear|warning|critical>", "summary": "<one line>"},
+    "infrastructure": {"status": "<clear|warning|critical>", "summary": "<one line>"}
   }
 }
 
@@ -98,6 +100,7 @@ def _fallback_response(raw: str = "") -> dict:
             "contamination": {"status": "warning", "summary": "Analysis unavailable"},
             "indigenous_lands": {"status": "warning", "summary": "Analysis unavailable"},
             "greenbelt": {"status": "warning", "summary": "Analysis unavailable"},
+            "infrastructure": {"status": "warning", "summary": "Analysis unavailable"},
         },
         "critical_blockers": [],
         "warnings": [],
@@ -110,6 +113,18 @@ def _fallback_response(raw: str = "") -> dict:
 
 async def analyze_location(geo_data: dict) -> dict:
     """Send geospatial intersection data to Gemini and get a structured assessment."""
+    # Build infrastructure summary if available
+    infrastructure_section = ""
+    infra = geo_data.get("infrastructure", {})
+    if infra.get("found"):
+        names = [f"- {i['label']}: {i['name']}" for i in infra["infrastructure"]]
+        infrastructure_section = f"""
+
+CRITICAL INFRASTRUCTURE DETECTED ({infra['count']} facilities within {infra['radius_m']}m):
+{chr(10).join(names)}
+
+These are ABSOLUTE BLOCKERS — existing major infrastructure cannot be demolished for new development."""
+
     user_prompt = f"""Analyze this location for land development viability:
 
 Location: {geo_data['lat']}°N, {abs(geo_data['lng'])}°W
@@ -118,7 +133,7 @@ Data layers queried: {geo_data['layers_queried']}
 Layers with intersecting features: {geo_data['layers_intersecting']}
 
 Geospatial intersection results:
-{json.dumps(geo_data['results'], indent=2, default=str)}
+{json.dumps(geo_data['results'], indent=2, default=str)}{infrastructure_section}
 
 Based on this data, provide your structured viability assessment as JSON."""
 
