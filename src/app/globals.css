@@ -15,7 +15,14 @@
   --color-status-clear: #16a34a;
   --color-status-warning: #d97706;
   --color-status-critical: #dc2626;
+  --color-dark: #0a0a0a;
+  --color-cream: #f5f0ea;
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -24,7 +31,47 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
-/* CloudinaryLoader animations */
+/* ── Homepage animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
+@keyframes signGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(100, 80, 200, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(100, 80, 200, 0.6)); }
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-15px) translateX(5px); opacity: 0.6; }
+  50% { transform: translateY(-25px) translateX(-5px); opacity: 0.4; }
+  75% { transform: translateY(-10px) translateX(8px); opacity: 0.5; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.animate-scroll-hint {
+  animation: scrollHint 2s ease-in-out infinite;
+}
+
+/* ── CloudinaryLoader animations ── */
 @keyframes scan {
   0% { transform: translateY(0); }
   100% { transform: translateY(calc(100vh - 2px)); }

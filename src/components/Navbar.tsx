@@ -5,10 +5,15 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useState, useRef, useEffect } from "react";
 
-export default function Navbar() {
+interface NavbarProps {
+  variant?: "solid" | "transparent";
+}
+
+export default function Navbar({ variant = "solid" }: NavbarProps) {
   const pathname = usePathname();
   const { user, isLoading } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,6 +26,13 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    if (variant !== "transparent") return;
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [variant]);
+
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -30,54 +42,60 @@ export default function Navbar() {
         .slice(0, 2)
     : "?";
 
+  /* ── Determine visual style ── */
+  const isSolid = variant === "solid" || scrolled;
+
+  const navCls = isSolid
+    ? "bg-white/90 backdrop-blur-md border-b border-border text-foreground shadow-sm"
+    : "bg-transparent text-white";
+
+  const linkCls = (active: boolean) =>
+    isSolid
+      ? active
+        ? "text-primary bg-primary/8"
+        : "text-muted hover:text-foreground"
+      : active
+        ? "text-white bg-white/15"
+        : "text-white/60 hover:text-white";
+
   return (
-    <nav className="h-16 border-b border-border bg-surface flex items-center justify-between px-6">
+    <nav
+      className={`h-16 flex items-center justify-between px-6 transition-all duration-500 ${
+        variant === "transparent" ? "fixed top-0 inset-x-0 z-50" : ""
+      } ${navCls}`}
+    >
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isSolid ? "bg-primary" : "bg-white/15"}`}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
           </div>
-          <span className="text-lg font-semibold text-foreground tracking-tight">TerraCheck</span>
+          <span className="text-lg font-semibold tracking-tight">TerraCheck</span>
         </Link>
 
-        {pathname !== "/" && (
-          <div className="flex items-center gap-1">
-            <Link
-              href="/dashboard"
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                pathname === "/dashboard"
-                  ? "text-primary bg-primary/8"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/assess"
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                pathname === "/assess"
-                  ? "text-primary bg-primary/8"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              New Assessment
-            </Link>
-            <Link
-              href="/recommend"
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                pathname === "/recommend"
-                  ? "text-primary bg-primary/8"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              Smart Recommend
-            </Link>
-          </div>
-        )}
+        <div className="flex items-center gap-1">
+          <Link
+            href="/dashboard"
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/dashboard")}`}
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/assess"
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/assess")}`}
+          >
+            New Assessment
+          </Link>
+          <Link
+            href="/recommend"
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/recommend")}`}
+          >
+            Smart Recommend
+          </Link>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -122,7 +140,11 @@ export default function Navbar() {
         ) : (
           <a
             href="/auth/login"
-            className="text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+            className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-colors ${
+              isSolid
+                ? "border-primary text-primary hover:bg-primary hover:text-white"
+                : "border-white/30 text-white hover:bg-white/10"
+            }`}
           >
             Sign In
           </a>

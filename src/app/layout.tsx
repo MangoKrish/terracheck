@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
 });
 
@@ -21,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Auth0Provider>
-        <body className={`${inter.variable} antialiased`}>
+        <body className={`${inter.variable} ${playfair.variable} antialiased`}>
           {children}
         </body>
       </Auth0Provider>
