@@ -300,17 +300,40 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-foreground py-8">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span className="text-sm font-semibold text-white/80">TerraCheck</span>
+      <footer className="bg-foreground py-10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span className="text-sm font-semibold text-white/80">TerraCheck</span>
+            </div>
+            <div className="flex gap-4">
+              <Link href="/assess" className="text-xs text-white/40 hover:text-white/70 transition-colors">Assess</Link>
+              <Link href="/recommend" className="text-xs text-white/40 hover:text-white/70 transition-colors">Recommend</Link>
+              <Link href="/dashboard" className="text-xs text-white/40 hover:text-white/70 transition-colors">Dashboard</Link>
+              <Link href="/demo" className="text-xs text-white/40 hover:text-white/70 transition-colors">Demo</Link>
+            </div>
           </div>
-          <p className="text-xs text-white/40">Built for Hack Canada 2025 · AI-powered land viability</p>
-          <div className="flex gap-4">
-            <Link href="/assess" className="text-xs text-white/40 hover:text-white/70 transition-colors">Assess</Link>
-            <Link href="/recommend" className="text-xs text-white/40 hover:text-white/70 transition-colors">Recommend</Link>
-            <Link href="/dashboard" className="text-xs text-white/40 hover:text-white/70 transition-colors">Dashboard</Link>
+          <div className="border-t border-white/10 pt-5 flex flex-col md:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-white/40">Built for Hack Canada 2025 · AI-powered land viability</p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://docs.google.com/forms/d/e/1UYO_QU-nH5wgA06DvWullt_J4HnlbTUUoArrNdALsgs/viewform"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-white/40 hover:text-white/70 transition-colors flex items-center gap-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Give Feedback
+              </a>
+              <a
+                href="mailto:sirigana@mcmaster.ca"
+                className="text-xs text-white/40 hover:text-white/70 transition-colors flex items-center gap-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                sirigana@mcmaster.ca
+              </a>
+            </div>
           </div>
         </div>
       </footer>
