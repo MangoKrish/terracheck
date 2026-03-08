@@ -32,8 +32,15 @@ export default function RecommendPage() {
     setError(null);
     setResult(null);
 
+    const startTime = Date.now();
+    const MIN_LOADING_MS = 3000; // Show loader for at least 3 seconds
+
     try {
       const data = await recommendLocations(formData);
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+      // Wait for minimum time to show loading animation
+      await new Promise((r) => setTimeout(r, remaining));
       setResult(data);
       setState("results");
       if (data.recommendations.recommendations.length > 0) {
@@ -68,14 +75,14 @@ export default function RecommendPage() {
   /* ── Side panel loader sub-component ── */
   function SidePanelLoader() {
     const LOAD_STEPS = [
-      { label: "Scanning zoning databases", time: 4000 },
-      { label: "Cross-referencing environmental data", time: 5000 },
-      { label: "Evaluating regulatory frameworks", time: 5000 },
-      { label: "Analyzing market competition", time: 6000 },
-      { label: "Checking development incentives", time: 4000 },
-      { label: "Assessing construction timelines", time: 5000 },
-      { label: "Running AI site selection model", time: 8000 },
-      { label: "Compiling final recommendations", time: 5000 },
+      { label: "Scanning zoning databases", time: 400 },
+      { label: "Cross-referencing environmental data", time: 400 },
+      { label: "Evaluating regulatory frameworks", time: 400 },
+      { label: "Analyzing market competition", time: 500 },
+      { label: "Checking development incentives", time: 300 },
+      { label: "Assessing construction timelines", time: 400 },
+      { label: "Running AI site selection model", time: 600 },
+      { label: "Compiling final recommendations", time: 500 },
     ];
     const totalTime = LOAD_STEPS.reduce((s, t) => s + t.time, 0);
     const startRef = useRef(Date.now());
@@ -96,7 +103,7 @@ export default function RecommendPage() {
       if (elapsed < acc + LOAD_STEPS[i].time) { step = i; break; }
       acc += LOAD_STEPS[i].time;
     }
-    const pct = Math.min(Math.round((elapsed / totalTime) * 100), 96);
+    const pct = Math.min(Math.round((elapsed / totalTime) * 100), 100);
 
     return (
       <div className="py-6">

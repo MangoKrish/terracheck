@@ -129,7 +129,7 @@ export default function RecommendForm({ onSubmit, error }: RecommendFormProps) {
               {field.label}
             </label>
             <select
-              value={(form as Record<string, string>)[field.key]}
+              value={(form as unknown as Record<string, string>)[field.key]}
               onChange={(e) => handleChange(field.key, e.target.value)}
               className="w-full px-3 py-2.5 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
             >
