@@ -331,7 +331,7 @@ export default function DemoRecommendPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      <Navbar />
+      <Navbar linkPrefix="/demo" />
 
       {/* Top toolbar */}
       <div className="h-14 border-b border-border bg-surface flex items-center px-6 gap-4">

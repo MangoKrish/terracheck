@@ -7,9 +7,10 @@ import { useState, useRef, useEffect } from "react";
 
 interface NavbarProps {
   variant?: "solid" | "transparent";
+  linkPrefix?: string;
 }
 
-export default function Navbar({ variant = "solid" }: NavbarProps) {
+export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarProps) {
   const pathname = usePathname();
   const { user, isLoading } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,7 +66,7 @@ export default function Navbar({ variant = "solid" }: NavbarProps) {
       } ${navCls}`}
     >
       <div className="flex items-center gap-8">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href={linkPrefix || "/"} className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isSolid ? "bg-primary" : "bg-white/15"}`}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -78,20 +79,20 @@ export default function Navbar({ variant = "solid" }: NavbarProps) {
 
         <div className="flex items-center gap-1">
           <Link
-            href="/dashboard"
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/dashboard")}`}
+            href={`${linkPrefix}/dashboard`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === `${linkPrefix}/dashboard`)}`}
           >
             Dashboard
           </Link>
           <Link
-            href="/assess"
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/assess")}`}
+            href={`${linkPrefix}/assess`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === `${linkPrefix}/assess`)}`}
           >
             New Assessment
           </Link>
           <Link
-            href="/recommend"
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === "/recommend")}`}
+            href={`${linkPrefix}/recommend`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${linkCls(pathname === `${linkPrefix}/recommend`)}`}
           >
             Smart Recommend
           </Link>
