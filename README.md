@@ -117,27 +117,3 @@ terracheck/
 
 MIT
 
-## Frontend redesign
-
-A complete redesign of the frontend is planned inspired by the layout and user flow of https://davidwhyte.com/experience/. The homepage will be a full-bleed visual hero that acts as a gateway into the app's major areas (Assess, Dashboard, About). The visual language prioritizes large imagery, minimal chrome, and clear micro-interactions to guide exploration.
-
-Key goals
-
-- Fullscreen hero on the homepage that leads to the app sections via clear, prominent links.
-- Minimal top navigation that recedes into the content.
-- Clean, typographic layout for assessment results and dashboard lists.
-- Mobile-first responsive behavior.
-
-Planned new frontend skeleton (App Router)
-
-- src/app/layout.tsx        # root layout (Navbar + main)
-- src/app/page.tsx          # homepage (hero-driven)
-- src/app/assess/page.tsx   # assessment/map experience
-- src/app/dashboard/page.tsx# saved assessments and lists
-- src/components/Navbar.tsx # minimal nav
-- src/components/Hero.tsx   # homepage hero component
-- src/styles/globals.css    # Tailwind + small overrides
-
-Notes
-
-- This is an initial skeleton to implement the new UX direction. The Hero will use a large image (replace public/images/hero.jpg) and lead users to the other app pages. From here we can iterate on animations, micro-interactions, and accessibility refinements.
