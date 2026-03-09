@@ -117,7 +117,7 @@ export default function RecommendPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center relative">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-pulse">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ECF39E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-pulse">
               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
             </svg>
           </div>
@@ -130,8 +130,8 @@ export default function RecommendPage() {
         {/* Circular progress */}
         <div className="w-20 h-20 mx-auto mb-5 relative">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#e8ede9" strokeWidth="5" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#2D6A4F" strokeWidth="5" strokeLinecap="round"
+            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(236, 243, 158, 0.2)" strokeWidth="5" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#ECF39E" strokeWidth="5" strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 40}`}
               strokeDashoffset={`${2 * Math.PI * 40 * (1 - pct / 100)}`}
               style={{ transition: "stroke-dashoffset 0.5s ease" }}
@@ -186,7 +186,7 @@ export default function RecommendPage() {
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#2D6A4F"
+            stroke="#ECF39E"
             strokeWidth="2"
           >
             <circle cx="12" cy="12" r="10" />

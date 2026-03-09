@@ -33,7 +33,7 @@ function createNumberedIcon(rank: number, isActive: boolean) {
     className: "",
     html: `<div style="
       width:${size}px;height:${size}px;
-      background:${isActive ? "#1B4332" : "#2D6A4F"};
+      background:${isActive ? "#31572C" : "#40916C"};
       color:white;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
       font-weight:700;font-size:${isActive ? 16 : 13}px;

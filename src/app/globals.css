@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #fafafa;
-  --color-foreground: #1a1a2e;
-  --color-primary: #2D6A4F;
-  --color-primary-light: #40916C;
-  --color-primary-dark: #1B4332;
-  --color-surface: #ffffff;
-  --color-surface-hover: #f5f5f5;
-  --color-border: #e5e5e5;
-  --color-border-light: #f0f0f0;
-  --color-muted: #737373;
-  --color-muted-light: #a3a3a3;
-  --color-status-clear: #16a34a;
-  --color-status-warning: #d97706;
-  --color-status-critical: #dc2626;
-  --color-dark: #0a0a0a;
-  --color-cream: #f5f0ea;
+  --color-background: #0d1510;
+  --color-foreground: #faf9f6;
+  --color-primary: #90a955;
+  --color-primary-light: #ecf39e;
+  --color-primary-dark: #31572c;
+  --color-surface: #15231a;
+  --color-surface-hover: #1c2f22;
+  --color-border: #304636;
+  --color-border-light: #3c5943;
+  --color-muted: #bec9b3;
+  --color-muted-light: #8fa086;
+  --color-status-clear: #c9df8a;
+  --color-status-warning: #e5c768;
+  --color-status-critical: #dc7f7f;
+  --color-dark: #08100b;
+  --color-cream: #faf9f6;
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
 }
@@ -26,25 +26,161 @@ html {
 }
 
 body {
-  background: var(--color-background);
+  background:
+    radial-gradient(circle at 16% 12%, rgba(64, 145, 108, 0.2), transparent 35%),
+    radial-gradient(circle at 88% 84%, rgba(144, 169, 85, 0.18), transparent 32%),
+    linear-gradient(180deg, #122117 0%, #0d1510 46%, #090f0c 100%);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
-/* ── Homepage animations ── */
+.site-chrome {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+.site-layer {
+  position: relative;
+  z-index: 2;
+}
+
+.plant-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.plant-soft-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(236, 243, 158, 0.05), transparent 45%),
+    linear-gradient(180deg, rgba(9, 16, 12, 0.12), rgba(9, 16, 12, 0.35));
+}
+
+.plant-frond {
+  position: absolute;
+  display: block;
+  border-radius: 48% 52% 66% 34% / 40% 38% 62% 60%;
+  mix-blend-mode: screen;
+  filter: blur(0.2px) saturate(1.08);
+  transition: opacity 220ms ease, transform 220ms ease;
+  will-change: transform, opacity;
+}
+
+.plant-frond::before,
+.plant-frond::after {
+  content: "";
+  position: absolute;
+  border-radius: 54% 46% 62% 38% / 42% 32% 68% 58%;
+}
+
+.plant-frond::before {
+  width: 54%;
+  height: 42%;
+  left: 18%;
+  top: -12%;
+  transform: rotate(-14deg);
+  opacity: 0.72;
+}
+
+.plant-frond::after {
+  width: 46%;
+  height: 44%;
+  right: 8%;
+  bottom: 4%;
+  transform: rotate(18deg);
+  opacity: 0.62;
+}
+
+.plant-forest {
+  background: linear-gradient(160deg, rgba(49, 87, 44, 0.38), rgba(17, 29, 20, 0.06));
+}
+
+.plant-forest::before,
+.plant-forest::after {
+  background: rgba(49, 87, 44, 0.27);
+}
+
+.plant-grass {
+  background: linear-gradient(160deg, rgba(64, 145, 108, 0.34), rgba(19, 40, 29, 0.08));
+}
+
+.plant-grass::before,
+.plant-grass::after {
+  background: rgba(64, 145, 108, 0.24);
+}
+
+.plant-moss {
+  background: linear-gradient(160deg, rgba(144, 169, 85, 0.34), rgba(34, 44, 24, 0.08));
+}
+
+.plant-moss::before,
+.plant-moss::after {
+  background: rgba(144, 169, 85, 0.24);
+}
+
+.plant-leaf {
+  background: linear-gradient(160deg, rgba(236, 243, 158, 0.26), rgba(70, 81, 42, 0.07));
+}
+
+.plant-leaf::before,
+.plant-leaf::after {
+  background: rgba(236, 243, 158, 0.22);
+}
+
+.plant-cursor-glow {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 243, 158, 0.24) 0%, rgba(236, 243, 158, 0.06) 36%, transparent 70%);
+  transition: opacity 200ms ease;
+}
+
+.plant-grain {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(250, 249, 246, 0.08) 0.72px, transparent 0.72px);
+  background-size: 3px 3px;
+  mix-blend-mode: soft-light;
+  opacity: 0.12;
+}
+
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scrollHint {
-  0%, 100% { transform: translateY(0); opacity: 0.6; }
-  50% { transform: translateY(8px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
 }
 
 .animate-fade-in-up {
@@ -59,16 +195,114 @@ body {
   animation: scrollHint 2s ease-in-out infinite;
 }
 
-/* ── CloudinaryLoader animations ── */
 @keyframes scan {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(calc(100vh - 2px)); }
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(100vh - 2px));
+  }
 }
+
 .animate-scan {
   animation: scan 3s ease-in-out infinite;
 }
 
 @keyframes sweep {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-sweep {
+  animation: sweep 8s linear infinite;
+}
+
+@keyframes mistSway {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+  50% {
+    opacity: 0.74;
+  }
+}
+
+.animate-mist-sway {
+  animation: mistSway 7s ease-in-out infinite;
+}
+
+.forest-noise {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 0.75px, transparent 0.75px);
+  background-size: 3px 3px;
+  mix-blend-mode: soft-light;
+}
+
+.forest-card {
+  border: 1px solid rgba(144, 169, 85, 0.32);
+  background: linear-gradient(160deg, rgba(21, 35, 26, 0.93), rgba(10, 16, 12, 0.92));
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 60px rgba(3, 10, 5, 0.44);
+  border-radius: 1.4rem;
+}
+
+.forest-panel {
+  border: 1px solid rgba(144, 169, 85, 0.24);
+  background: linear-gradient(145deg, rgba(20, 33, 23, 0.9), rgba(12, 20, 14, 0.88));
+  border-radius: 1.05rem;
+  box-shadow: 0 12px 34px rgba(4, 9, 5, 0.24);
+}
+
+.forest-chip {
+  border: 1px solid rgba(236, 243, 158, 0.26);
+  background: rgba(20, 33, 23, 0.68);
+  border-radius: 0.9rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.forest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(144, 169, 85, 0.2);
+  padding-bottom: 0.45rem;
+}
+
+.forest-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+@media (max-width: 960px) {
+  .forest-card,
+  .forest-panel {
+    border-radius: 1rem;
+  }
+
+  .plant-frond {
+    filter: blur(0.35px) saturate(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .plant-frond,
+  .plant-cursor-glow {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

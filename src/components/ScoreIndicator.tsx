@@ -23,7 +23,7 @@ export default function ScoreIndicator({ score, label = "Viability Score" }: Sco
             cy="40"
             r="36"
             fill="none"
-            stroke="#e5e5e5"
+            stroke="rgba(236, 243, 158, 0.2)"
             strokeWidth="6"
           />
           <circle

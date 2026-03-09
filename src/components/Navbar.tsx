@@ -44,20 +44,27 @@ export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarPro
     : "?";
 
   /* ── Determine visual style ── */
-  const isSolid = variant === "solid" || scrolled;
+  const isSolid = variant === "solid";
+  const isTransparentScrolled = variant === "transparent" && scrolled;
 
   const navCls = isSolid
-    ? "bg-white/90 backdrop-blur-md border-b border-border text-foreground shadow-sm"
-    : "bg-transparent text-white";
+    ? "bg-[#0f1a12]/88 backdrop-blur-md border-b border-border text-foreground shadow-[0_6px_28px_rgba(1,6,3,0.45)]"
+    : isTransparentScrolled
+      ? "bg-[#0f1a12]/85 backdrop-blur-md border-b border-[#2a3b2b] text-[#eef1e6]"
+      : "bg-transparent text-white";
 
   const linkCls = (active: boolean) =>
     isSolid
       ? active
-        ? "text-primary bg-primary/8"
+        ? "text-primary-light bg-primary/12"
         : "text-muted hover:text-foreground"
-      : active
-        ? "text-white bg-white/15"
-        : "text-white/60 hover:text-white";
+      : isTransparentScrolled
+        ? active
+          ? "text-[#e3f0d7] bg-[#223126]"
+          : "text-[#b4c6ad] hover:text-[#eef5e4]"
+        : active
+          ? "text-white bg-white/15"
+          : "text-white/60 hover:text-white";
 
   return (
     <nav
@@ -67,7 +74,7 @@ export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarPro
     >
       <div className="flex items-center gap-8">
         <Link href={linkPrefix || "/"} className="flex items-center gap-2.5">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isSolid ? "bg-primary" : "bg-white/15"}`}>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isSolid ? "bg-[#233428]" : isTransparentScrolled ? "bg-[#233428]" : "bg-white/15"}`}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
@@ -101,7 +108,7 @@ export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarPro
 
       <div className="flex items-center gap-4">
         {isLoading ? (
-          <div className="w-8 h-8 rounded-full bg-border animate-pulse" />
+          <div className="w-8 h-8 rounded-full bg-border/70 animate-pulse" />
         ) : user ? (
           <div className="relative" ref={menuRef}>
             <button
@@ -112,7 +119,7 @@ export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarPro
                 <img
                   src={user.picture}
                   alt={user.name || "User"}
-                  className="w-8 h-8 rounded-full object-cover border border-border"
+                  className="w-8 h-8 rounded-full object-cover border border-border/70"
                 />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-primary-light/20 flex items-center justify-center text-sm font-medium text-primary-dark">
@@ -143,8 +150,10 @@ export default function Navbar({ variant = "solid", linkPrefix = "" }: NavbarPro
             href="/auth/login"
             className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-colors ${
               isSolid
-                ? "border-primary text-primary hover:bg-primary hover:text-white"
-                : "border-white/30 text-white hover:bg-white/10"
+                ? "border-primary text-primary-light hover:bg-primary/20"
+                : isTransparentScrolled
+                  ? "border-[#8ca782]/45 text-[#d5e2ca] hover:bg-[#203022]"
+                  : "border-white/30 text-white hover:bg-white/10"
             }`}
           >
             Sign In
